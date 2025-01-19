@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSSA会员卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            padding: 2rem;
+            text-align: center;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-image: linear-gradient(
+                45deg,
+                #ff0000,
+                #ff7f00,
+                #ffff00,
+                #00ff00,
+                #0000ff,
+                #4b0082,
+                #8b00ff
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 400%;
+            animation: rainbow 8s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+
+        .card-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1rem;
+        }
+
+        .card {
+            max-width: 320px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+            padding: 1.5rem;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h2 {
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .partner {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .partner-info {
+            flex: 1;
+        }
+
+        .partner-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .partner-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        .menu-button {
+            width: 100px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 0;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .menu-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .menu-button:hover {
+            background: #2563eb;
+        }
+
+        .menu-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .menu-modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 0.5rem;
+        }
+
+        .menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .partner h3 {
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .partner .address {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .partner .discount {
+            color: #059669;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>学联CSSA会员卡</h1>
+        
+        <div class="card-container">
+            <div class="card" onclick="openModal()">
+                <img src="img/huiyuanka.png" alt="CSSA会员卡">
+                <h2>点击查看合作商家</h2>
+                <p>享受会员专属优惠</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="partnersModal" onclick="closeModalOnBackground(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>合作商家列表</h2>
+                <button class="close-button" onclick="closeModal()">×</button>
+            </div>
+            <div class="partners-list">
+                <div class="partner">
+                    <div class="partner-info">
+                        <h3>商家A</h3>
+                        <div class="address">123 Main Street, City</div>
+                        <div class="discount">9折优惠</div>
+                    </div>
+                    <div class="partner-right">
+                        <img src="img/shangjiaA.png" alt="商家A Logo" class="partner-logo">
+                        <button class="menu-button" onclick="showMenu('menuA')">查看菜单</button>
+                    </div>
+                </div>
+                <div class="partner">
+                    <div class="partner-info">
+                        <h3>商家B</h3>
+                        <div class="address">456 Park Avenue, City</div>
+                        <div class="discount">85折优惠</div>
+                    </div>
+                    <div class="partner-right">
+                        <img src="img/shangjiaB.png" alt="商家B Logo" class="partner-logo">
+                        <button class="menu-button" onclick="showMenu('menuB')">查看菜单</button>
+                    </div>
+                </div>
+                <div class="partner">
+                    <div class="partner-info">
+                        <h3>商家C</h3>
+                        <div class="address">789 Oak Road, City</div>
+                        <div class="discount">买一赠一</div>
+                    </div>
+                    <div class="partner-right">
+                        <img src="img/shangjiaC.png" alt="商家C Logo" class="partner-logo">
+                        <button class="menu-button" onclick="showMenu('menuC')">查看菜单</button>
+                    </div>
+                </div>
+
+                <!-- 菜单弹窗 -->
+                <div id="menuA" class="menu-modal" onclick="closeMenuModal(event, 'menuA')">
+                    <button class="menu-close" onclick="closeMenu('menuA')">×</button>
+                    <img src="./img/菜单1.jpg" alt="商家A菜单">
+                </div>
+                <div id="menuB" class="menu-modal" onclick="closeMenuModal(event, 'menuB')">
+                    <button class="menu-close" onclick="closeMenu('menuB')">×</button>
+                    <img src="img/menuB.png" alt="商家B菜单">
+                </div>
+                <div id="menuC" class="menu-modal" onclick="closeMenuModal(event, 'menuC')">
+                    <button class="menu-close" onclick="closeMenu('menuC')">×</button>
+                    <img src="img/menuC.png" alt="商家C菜单">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('partnersModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('partnersModal').style.display = 'none';
+        }
+
+        function closeModalOnBackground(event) {
+            if (event.target === document.getElementById('partnersModal')) {
+                closeModal();
+            }
+        }
+
+        function showMenu(menuId) {
+            document.getElementById(menuId).style.display = 'flex';
+        }
+
+        function closeMenu(menuId) {
+            document.getElementById(menuId).style.display = 'none';
+        }
+
+        function closeMenuModal(event, menuId) {
+            if (event.target === document.getElementById(menuId)) {
+                closeMenu(menuId);
+            }
+        }
+    </script>
+</body>
+</html>
